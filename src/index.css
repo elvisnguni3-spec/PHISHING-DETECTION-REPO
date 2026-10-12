@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #132844;
+  background: #f4f8ff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #f4f8ff; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+::selection { background: #dbeafe; color: #174ea6; }
+.font-display { font-family: "Manrope", sans-serif; }
+.soft-grid { background-image: radial-gradient(#d9e7f9 0.8px, transparent 0.8px); background-size: 18px 18px; }
+.card-shadow { box-shadow: 0 10px 35px rgba(31, 71, 125, 0.055); }
+.focus-ring:focus { outline: 3px solid rgba(59, 130, 246, 0.22); outline-offset: 1px; }
