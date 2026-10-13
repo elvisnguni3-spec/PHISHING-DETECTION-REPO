@@ -1,0 +1,40 @@
+Example 1: Bank Phishing
+
+URGENT! Your bank account has been compromised. We detected suspicious activity. Click here immediately to verify your identity and secure your account: http://secure-bank-verify-login.com/account/update
+
+Example 2: PayPal Scam
+
+Your PayPal account has been temporarily limited. To restore access, confirm your details now at http://paypal-verification-center.com/login. Action required within 24 hours or your account will be suspended.
+
+Example 3: Prize Winner Scam
+
+CONGRATULATIONS! You have won K1,000,000 in our international lottery! To claim your prize, provide your bank details and click http://claim-your-prize-now.xyz/winner. Limited time offer!
+
+Example 4: Package Delivery Scam
+
+Your package could not be delivered. Please update your address and pay the shipping fee here: http://track-package-redelivery.xyz/update. Failure to respond will result in return to sender.
+
+Example 5: Netflix/Streaming Scam
+
+Your Netflix subscription payment failed. Update your credit card information immediately to avoid service interruption: http://netflix-billing-update.com/secure/payment
+
+Example 6: Amazon Security Alert
+
+Amazon Security Alert: Unusual sign-in activity detected on your account. Verify your identity now at http://amazon-account-security-check.com/verify or your account will be locked.
+
+Example 7: Job Offer Scam
+
+You have been selected for a work-from-home opportunity earning K5000 per week! No experience needed. Send your SSN and bank account to http://easy-money-jobs.xyz/apply to start today.
+
+Example 8: Crypto Investment Scam
+
+URGENT! Your Bitcoin wallet has been flagged. Verify your credentials immediately at http://crypto-wallet-secure-login.com to prevent fund loss. Act now, limited time!
+
+Example 9: Tax Refund Scam
+
+IRS Notice: You are eligible for a tax refund of K3,847. Claim it now by entering your bank details at http://irs-refund-claim.com/verify. Deadline expires today!
+
+Example 10: Subscription Renewal Scam
+
+Your antivirus subscription has expired. Renew immediately to protect your device from viruses. Click http://antivirus-renew-now.com/payment and enter your card details.
+

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phishing Detector</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>PHISHING DETECTOR</h1>
+        <p>network security analysis • threat intelligence</p>
+    </div>
+
+    <div class="scan-line">[ SCAN MODE: AUTO-DETECT ]</div>
+
+    <textarea id="userInput" placeholder="enter url or paste message for analysis..."></textarea>
+
+    <div class="button-container">
+        <button onclick="analyze()">analyze</button>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="status-bar">
+        <span>● secure connection</span> &nbsp;|&nbsp; <span>v1.0</span>
+    </div>
+</div>
+
+<script>
+    async function analyze() {
+        const input = document.getElementById('userInput').value;
+        const resultDiv = document.getElementById('result');
+        
+        if (!input.trim()) {
+            resultDiv.innerHTML = '<div class="error">[ ERROR ] input cannot be empty</div>';
+            return;
+        }
+        
+        resultDiv.innerHTML = '<div class="loading">[ analyzing ] scanning signatures</div>';
+        
+        try {
+            const response = await fetch('http://localhost:8000/detect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    input: input,
+                    input_type: 'auto'
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const r = data.data;
+                
+                const ruleScore = r.scores?.rule_score || r.rule_score || 0;
+                const aiScore = r.scores?.ai_score || r.ai_score || 0;
+                const apiScore = r.scores?.api_score || r.api_score || 0;
+                
+                const verdictClass = {
+                    'safe': 'verdict-safe',
+                    'suspicious': 'verdict-suspicious',
+                    'malicious': 'verdict-malicious',
+                    'scam': 'verdict-scam'
+                }[r.verdict] || '';
+                
+                const filteredReasons = r.reasons ? r.reasons.filter(reason => {
+                    return !reason.includes('SCORE BREAKDOWN') && 
+                           !reason.includes('Heuristic Rules:') && 
+                           !reason.includes('AI Model:') && 
+                           !reason.includes('URLScan.io:') && 
+                           !reason.includes('FINAL SCORE:') &&
+                           !reason.includes('───────────────────');
+                }) : [];
+                
+                resultDiv.innerHTML = `
+                    <div class="result-box">
+                        <div class="result-title">[ ANALYSIS REPORT ]</div>
+                        
+                        <div class="result-item">
+                            <strong>input:</strong> ${r.original_input}
+                        </div>
+                        
+                        <div class="result-item">
+                            <strong>verdict:</strong> <span class="${verdictClass}">${r.verdict ? r.verdict.toUpperCase() : 'UNKNOWN'}</span>
+                        </div>
+                        
+                        <div class="result-item">
+                            <strong>confidence:</strong> ${r.confidence ? (r.confidence * 100).toFixed(1) : '0'}%
+                        </div>
+                        
+                        <div class="result-item">
+                            <strong>score breakdown:</strong>
+                            <ul class="score-list">
+                                <li>heuristic rules: ${ruleScore}%</li>
+                                <li>ai model: ${aiScore}%</li>
+                                ${apiScore > 0 ? `<li>urlscan.io: ${apiScore}%</li>` : ''}
+                            </ul>
+                        </div>
+                        
+                        <div class="result-item">
+                            <strong>reasons:</strong>
+                            <ul class="reasons-list">
+                                ${filteredReasons.length > 0 ? filteredReasons.map(reason => `<li>${reason}</li>`).join('') : '<li>no reasons provided</li>'}
+                            </ul>
+                        </div>
+                        
+                        ${r.scan_report_link ? `<a class="report-link" href="${r.scan_report_link}" target="_blank">view urlscan.io report</a>` : ''}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div class="error">[ ERROR ] ${data.error ? data.error.message : 'unknown error'}</div>`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<div class="error">[ ERROR ] ${error.message}</div>`;
+        }
+    }
+</script>
+
+</body>
+</html>
