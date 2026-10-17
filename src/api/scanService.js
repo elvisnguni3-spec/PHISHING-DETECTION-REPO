@@ -37,9 +37,30 @@ function mockScan(rawUrl) {
 }
 
 export async function scanSingle(url) {
-  if (USE_MOCK) { await sleep(850); return mockScan(url); }
-  const { data } = await api.post("/scan/single", { url: normalizeUrl(url) });
-  return data;
+  if (USE_MOCK) {
+    await sleep(850);
+    return mockScan(url);
+  }
+
+  const { data } = await api.post("/detect", {
+    url: normalizeUrl(url),
+  });
+
+  const score = data.analysis.score;
+
+  return {
+    id: crypto.randomUUID(),
+    url: data.input,
+    score,
+    level: getLevel(score).label,
+    reasons: (data.explanation || []).map((item) => item.reason),
+    scannedAt: data.metadata?.scan_time || new Date().toISOString(),
+    verdict: data.analysis.verdict,
+    confidence: data.analysis.confidence,
+    riskBreakdown: data.risk_breakdown,
+    features: data.features,
+    recommendation: data.recommendation,
+  };
 }
 
 export async function scanBatch(urls, onProgress) {
@@ -57,12 +78,27 @@ export async function scanBatch(urls, onProgress) {
   return data.results;
 }
 
+
 export async function loginRequest(email, password) {
   if (USE_MOCK) {
     await sleep(500);
-    if (password.length < 6) throw new Error("Password must be at least 6 characters.");
-    return { token: "mock-token", user: { email, name: email.split("@")[0] } };
+    if (password.length < 6) {
+      throw new Error("Password must be at least 6 characters.");
+    }
+    return {
+      token: "mock-token",
+      user: { email, name: email.split("@")[0] },
+    };
   }
-  const { data } = await api.post("/auth/login", { email, password });
-  return data;
+
+  const { data } = await api.post("/login", {
+    email: email,
+    password: password,
+  });
+
+  return {
+    token: data.access_token,
+    user: data.user,
+  };
 }
+

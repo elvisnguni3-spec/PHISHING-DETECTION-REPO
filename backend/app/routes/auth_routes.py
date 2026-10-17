@@ -66,7 +66,7 @@ def login_user(
 ):
     # Find the user
     user = db.query(User).filter(
-        User.username == data.username
+        User.email == data.email
     ).first()
 
     if not user:
@@ -91,11 +91,19 @@ def login_user(
         "role": user.role
     })
 
+   
     return {
-            "message": "Login successful",
-            "access_token": access_token,
-            "token_type": "bearer"
+        "message": "Login successful",
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "user_id": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
         }
+    }
+
 
 
 @router.get("/me")
