@@ -28,7 +28,7 @@ class TextAI:
         reasons = []
         
         if not self.model:
-            return 50, ["AI model unavailable - using default score"]
+            return 0, ["AI model not loaded - AI check skipped"]
         
         try:
             result = self.model(text[:512])[0]
@@ -44,4 +44,4 @@ class TextAI:
             
             return score, reasons
         except Exception as e:
-            return 50, [f"AI error: {str(e)[:50]}"]
+            return 0, [f"AI check skipped: {str(e)[:50]}"]

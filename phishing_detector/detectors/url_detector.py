@@ -45,7 +45,7 @@ class URLDetector:
         if scores:
             final_score = sum(scores) / len(scores)
         else:
-            final_score = 50
+            final_score = 0
         
         reasons.append(f"\nSCORE BREAKDOWN:")
         reasons.append(f"   Heuristic Rules: {rule_score:.0f}%")

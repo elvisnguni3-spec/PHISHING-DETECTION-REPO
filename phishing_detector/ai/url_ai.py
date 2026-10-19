@@ -28,7 +28,7 @@ class URLAI:
         reasons = []
         
         if not self.model:
-            return 50, ["AI model unavailable - using default score"]
+            return 0, ["AI model not loaded - AI check skipped"]
         
         try:
             # Clean URL for analysis
@@ -46,4 +46,4 @@ class URLAI:
             
             return score, reasons
         except Exception as e:
-            return 50, [f"AI error: {str(e)[:50]}"]
+            return 0, [f"AI check skipped: {str(e)[:50]}"]

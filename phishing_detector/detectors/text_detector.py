@@ -27,7 +27,10 @@ class TextDetector:
         reasons.extend(ai_reasons)
         
         # CALCULATE AVERAGE
-        scores = [rule_score, ai_score]
+        # Only average in the AI score when the AI model is actually loaded
+        scores = [rule_score]
+        if self.ai.model is not None:
+            scores.append(ai_score)
         final_score = sum(scores) / len(scores)
         
         reasons.append(f"\nSCORE BREAKDOWN:")
@@ -57,5 +60,6 @@ class TextDetector:
             reasons=reasons,
             rule_score=rule_score,
             ai_score=ai_score,
-            api_score=0
+            api_score=0,
+            final_score=final_score
         )
