@@ -20,7 +20,7 @@ export default function Login() {
     if (password.length < 6) return setError("Your password must be at least 6 characters.");
     setLoading(true);
     try { await login(email, password); navigate("/dashboard"); }
-    catch (exception) { setError(exception.response?.data?.message || exception.message || "Unable to sign in. Please try again."); }
+    catch (exception) { setError(exception.response?.data?.detail || exception.response?.data?.message || exception.message || "Unable to sign in. Please try again."); }
     finally { setLoading(false); }
   };
 

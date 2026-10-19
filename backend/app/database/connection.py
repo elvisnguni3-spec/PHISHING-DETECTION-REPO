@@ -4,11 +4,12 @@ from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
 
 
-# Database URL from .env
-DATABASE_URL = settings.DATABASE_URL
+# Database URL from settings
+DATABASE_URL = settings.DATABASE_URL or "sqlite:///./phishguard.db"
 
-# Create the SQLAlchemy engine
-engine = create_engine(DATABASE_URL)
+# Create the SQLAlchemy engine (handle SQLite multithreading)
+connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
 # Create a session factory
 SessionLocal = sessionmaker(

@@ -4,6 +4,9 @@ from pydantic import BaseModel
 class URLScanRequest(BaseModel):
     url: str
 
+class BatchScanRequest(BaseModel):
+    urls: list[str]
+
 class Analysis(BaseModel):
     score: int
     verdict: str
