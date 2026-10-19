@@ -11,8 +11,8 @@ DETECTION_ENGINE_URL = os.getenv(
 )
 
 
-async def detect_with_partner(url: str) -> dict:
-    """Send a URL to the partner's detection engine."""
+async def detect_with_partner(url: str, input_type: str = "URL") -> dict:
+    """Send a URL (or message text) to the partner's detection engine."""
 
     try:
         async with httpx.AsyncClient(timeout=180.0) as client:
@@ -20,7 +20,7 @@ async def detect_with_partner(url: str) -> dict:
                 f"{DETECTION_ENGINE_URL}/detect",
                 json={
                     "input": url,
-                    "input_type": "URL",
+                    "input_type": input_type,
                 },
             )
 

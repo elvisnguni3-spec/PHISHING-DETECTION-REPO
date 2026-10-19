@@ -42,6 +42,19 @@ export async function scanSingle(url) {
   return data;
 }
 
+function mockText(text) {
+  const hits = (text.toLowerCase().match(/verify|urgent|suspended|password|bank|prize|winner|gift card|click here|otp/g) || []);
+  const score = Math.min(100, hits.length * 18 + (/https?:\/\//i.test(text) ? 15 : 0));
+  const reasons = hits.length ? hits.map((word) => `Contains the phrase "${word}"`) : ["No suspicious patterns detected"];
+  return { id: crypto.randomUUID(), url: text.trim(), score, level: getLevel(score).label, reasons, scannedAt: new Date().toISOString(), type: "message" };
+}
+
+export async function scanText(text) {
+  if (USE_MOCK) { await sleep(850); return mockText(text); }
+  const { data } = await api.post("/scan/text", { text: text.trim() });
+  return data;
+}
+
 export async function scanBatch(urls, onProgress) {
   if (USE_MOCK) {
     const results = [];

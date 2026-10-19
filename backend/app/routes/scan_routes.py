@@ -7,6 +7,7 @@ import re
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.security import get_current_user
@@ -176,6 +177,71 @@ def build_scan_response(result: dict) -> ScanResponse:
             scan_type="url",
         ),
     )
+
+
+class TextScanRequest(BaseModel):
+    text: str
+
+
+SCAM_PHRASES = [
+    "verify your account", "urgent", "suspended", "click here", "password",
+    "bank", "winner", "prize", "gift card", "wire transfer", "limited time",
+    "confirm your identity", "login", "otp", "pin", "act now", "invoice",
+]
+
+
+def simple_text_check(text: str) -> dict:
+    """Basic keyword check, used only if the detection engine is offline."""
+    lowered = text.lower()
+    hits = [phrase for phrase in SCAM_PHRASES if phrase in lowered]
+    links = re.findall(r"https?://\S+|www\.\S+", text)
+
+    score = len(hits) * 15
+    reasons = [f"Contains the phrase '{phrase}'" for phrase in hits]
+    if links:
+        score += 15
+        reasons.append("Contains a link that you should verify before opening")
+    if text.count("!") >= 2:
+        score += 10
+        reasons.append("Uses pressure tactics such as repeated exclamation marks")
+    score = min(score, 100)
+
+    return {
+        "input": text,
+        "verdict": "malicious" if score >= 70 else "suspicious" if score >= 30 else "safe",
+        "confidence": min(100, score + 10),
+        "score": score,
+        "reasons": reasons or ["No suspicious patterns detected"],
+        "rule_score": score,
+        "ai_score": 0,
+        "api_score": 0,
+        "scan_report_link": None,
+    }
+
+
+@router.post("/scan/text")
+async def scan_text(data: TextScanRequest):
+    text = data.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Message cannot be empty.")
+
+    try:
+        raw_result = await detect_with_partner(text, "Text")
+        # The engine's text detector does not set final_score (it stays 0),
+        # so rebuild it from the rule and AI scores.
+        if not float(raw_result.get("final_score") or 0):
+            raw_result["final_score"] = (
+                float(raw_result.get("rule_score") or 0)
+                + float(raw_result.get("ai_score") or 0)
+            ) / 2
+        result = prepare_partner_result(raw_result)
+    except Exception:
+        # Engine offline or returned something unusable: use the simple check
+        result = simple_text_check(text)
+
+    response = build_frontend_scan_result(result)
+    response["type"] = "message"
+    return response
 
 
 @router.post("/scan/single")
